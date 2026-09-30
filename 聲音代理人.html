@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>課堂聲音代理人 - 國小導師版</title>
+<style>
+:root{--bg:#1a2332;--card:#24344d;--btn:#ffbf3f;--btn2:#4fc3f7;--text:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif}
+header{padding:16px 20px;background:#0f1724;position:sticky;top:0;z-index:10}
+header h1{margin:0;font-size:24px}
+header p{margin:4px 0 0;color:#aebdd2;font-size:14px}
+main{max-width:900px;margin:0 auto;padding:20px;display:grid;gap:16px}
+.card{background:var(--card);border-radius:16px;padding:18px}
+.card h2{margin:0 0 12px;font-size:20px}
+#textInput{width:100%;min-height:140px;font-size:28px;line-height:1.5;padding:14px;border-radius:12px;border:3px solid #ffbf3f;background:#fff;color:#111;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+button{border:0;border-radius:12px;padding:14px 20px;font-size:20px;font-weight:700;cursor:pointer}
+.btn-speak{background:var(--btn);color:#222;flex:1;min-width:160px;font-size:24px}
+.btn-stop{background:#ef5350;color:#fff;min-width:120px}
+.btn-sub{background:var(--btn2);color:#0a2233;font-size:18px}
+.btn-preset{background:#33465f;color:#fff;border:2px solid #5c7a9e;font-size:19px;text-align:left}
+.btn-preset:hover{border-color:var(--btn)}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.presets{grid-template-columns:1fr}#textInput{font-size:24px}}
+label{font-size:16px;color:#cfe0f5}
+select,input[type=range]{width:100%;margin:6px 0 12px;font-size:18px;padding:8px}
+#status{min-height:28px;color:#ffe082;font-size:17px;margin-top:8px}
+#preview{max-width:100%;max-height:260px;border-radius:12px;display:none;margin-top:10px}
+.small{font-size:15px;color:#aebdd2;line-height:1.7}
+.kbd{background:#0f1724;padding:2px 8px;border-radius:6px}
+</style>
+</head>
+<body>
+<header>
+<h1>🔊 課堂聲音代理人 <span style="font-size:15px;color:#ffbf3f">國小導師版</span></h1>
+<p>打字就唸・拍照就唸・免安裝・教室電腦 / 手機都能用</p>
+</header>
+<main>
+<div class="card">
+<h2>1️⃣ 輸入要說的話</h2>
+<textarea id="textInput" placeholder="在這裡輸入文字，例如：同學們早安，今天我們要上第三課…">同學們早安，今天我們一起加油喔！</textarea>
+<div class="row">
+<button class="btn-speak" onclick="speak()">▶ 唸出來 (Ctrl+Enter)</button>
+<button class="btn-stop" onclick="stop()">⏹ 停止</button>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px">
+<div><label>語速 (建議0.8慢速)</label><input id="rate" type="range" min="0.5" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('rateV').textContent=this.value"><div id="rateV">0.8</div></div>
+<div><label>音調</label><input id="pitch" type="range" min="0.5" max="1.5" step="0.1" value="1" oninput="document.getElementById('pitchV').textContent=this.value"><div id="pitchV">1</div></div>
+<div><label>聲音</label><select id="voice"></select></div>
+</div>
+<div id="status"></div>
+</div>
+
+<div class="card">
+<h2>2️⃣ 國小常用語，一鍵就唸</h2>
+<div class="presets" id="presets"></div>
+<div class="row">
+<input id="customPreset" placeholder="自訂一句，例如：翻開國語課本第32頁" style="flex:1;padding:12px;font-size:18px;border-radius:10px;border:0">
+<button class="btn-sub" onclick="addPreset()">＋加入</button>
+</div>
+</div>
+
+<div class="card">
+<h2>3️⃣ 用相機拍文字，直接唸出來</h2>
+<p class="small">適合拍課本、聯絡簿、黑板。拍照後會自動辨識文字並唸出。第一次使用需連網下載辨識模組，之後文字朗讀可離線。</p>
+<div class="row">
+<label for="fileInput" class="btn-sub" style="padding:14px 20px;cursor:pointer">📷 拍照 / 上傳圖片</label>
+<input id="fileInput" type="file" accept="image/*" capture="environment" style="display:none">
+<button class="btn-sub" onclick="clearImg()">清除圖片</button>
+</div>
+<img id="preview" alt="拍攝預覽">
+<div id="ocrStatus" class="small"></div>
+</div>
+
+<div class="card">
+<h2>📝 使用小技巧</h2>
+<p class="small">
+・教室電腦建議用 Chrome / Edge，聲音最自然。<br>
+・手機也能開這個檔案，點 <span class="kbd">📷拍照</span> 就能拍課本唸。<br>
+・語速 0.7～0.9 最適合低年級。<br>
+・快速鍵：<span class="kbd">Ctrl + Enter</span> = 唸出來，<span class="kbd">Esc</span> = 停止。
+</p>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+const phrases=["同學們早安，現在開始上課囉","請拿出國語課本，翻開今天要上的那一頁","很棒，你回答得非常好","請安靜，眼睛看老師","小組討論開始，音量輕輕的","排隊了，椅子靠好再出來","下課，請喝水、上廁所","請舉手再發言喔","老師再說一次，請仔細聽","今天的功課寫在聯絡簿上，回家要完成喔"];
+const box=document.getElementById('presets');
+function renderPresets(){
+box.innerHTML='';
+phrases.forEach((p,i)=>{
+const b=document.createElement('button');
+b.className='btn-preset';b.textContent='🔊 '+p;
+b.onclick=()=>{document.getElementById('textInput').value=p;speak();};
+box.appendChild(b);
+});
+}
+function addPreset(){
+const v=document.getElementById('customPreset').value.trim();
+if(!v)return alert('請先輸入一句話');
+phrases.push(v);document.getElementById('customPreset').value='';renderPresets();
+}
+renderPresets();
+
+let voices=[];
+function loadVoices(){
+voices=speechSynthesis.getVoices();
+const sel=document.getElementById('voice');sel.innerHTML='';
+let tw=voices.filter(v=>v.lang&&v.lang.toLowerCase().includes('zh'));
+let list=tw.length?tw:voices;
+if(!list.length){sel.innerHTML='<option>系統預設</option>';return;}
+list.forEach((v,i)=>{
+const o=document.createElement('option');o.value=voices.indexOf(v);
+o.textContent=v.name+' ('+v.lang+')';
+if(v.lang.includes('TW'))o.selected=true;
+sel.appendChild(o);
+});
+}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function speak(){
+if(!('speechSynthesis' in window)){alert('此瀏覽器不支援語音，請改用 Chrome 或 Edge');return;}
+speechSynthesis.cancel();
+const t=document.getElementById('textInput').value.trim();
+if(!t){alert('請先輸入文字');return;}
+const u=new SpeechSynthesisUtterance(t);
+u.lang='zh-TW';
+u.rate=parseFloat(document.getElementById('rate').value);
+u.pitch=parseFloat(document.getElementById('pitch').value);
+const vi=document.getElementById('voice').value;
+if(voices[vi])u.voice=voices[vi];
+document.getElementById('status').textContent='🔊 朗讀中：'+t.slice(0,30)+(t.length>30?'…':'');
+u.onend=()=>document.getElementById('status').textContent='✅ 唸完了';
+speechSynthesis.speak(u);
+}
+function stop(){speechSynthesis.cancel();document.getElementById('status').textContent='⏹ 已停止';}
+document.addEventListener('keydown',e=>{
+if((e.ctrlKey||e.metaKey)&&e.key==='Enter')speak();
+if(e.key==='Escape')stop();
+});
+const fileInput=document.getElementById('fileInput');
+fileInput.addEventListener('change',async e=>{
+const f=e.target.files[0];if(!f)return;
+const img=document.getElementById('preview');
+img.src=URL.createObjectURL(f);img.style.display='block';
+const st=document.getElementById('ocrStatus');
+st.textContent='🔍 辨識中，請稍候（約5-15秒）…';
+try{
+if(typeof Tesseract==='undefined')throw new Error('辨識模組載入失敗，請確認有連網');
+const r=await Tesseract.recognize(f,'chi_tra+eng',{logger:m=>{if(m.status==='recognizing text')st.textContent='🔍 辨識中 '+Math.round(m.progress*100)+'%…';}});
+const txt=r.data.text.trim().replace(/\n{3,}/g,'\n\n');
+if(!txt){st.textContent='😥 沒有辨識到文字，換張清楚一點的照片試試';return;}
+document.getElementById('textInput').value=txt;
+st.textContent='✅ 辨識完成，已自動朗讀，可再按一次唸出來重聽';
+speak();
+}catch(err){st.textContent='⚠️ 辨識失敗：'+err.message;}
+});
+function clearImg(){fileInput.value='';document.getElementById('preview').style.display='none';document.getElementById('ocrStatus').textContent='';}
+</script>
+</body>
+</html>
