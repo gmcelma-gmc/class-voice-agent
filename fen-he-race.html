@@ -3,249 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3上 分與合｜分組競賽互動白板</title>
+<title>分與合｜雙人搶答動態競賽</title>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;background:#0f3d2e;color:#fff;min-height:100vh}
-header{background:#0a2e22;padding:12px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-bottom:4px solid #ffd54f}
-h1{margin:0;font-size:28px;letter-spacing:1px}
-h1 small{font-size:16px;background:#ffd54f;color:#333;border-radius:20px;padding:2px 12px;margin-left:8px;vertical-align:middle}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+body{margin:0;font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif;background:#eef3ff;color:#222;min-height:100vh}
+header{background:#fff;padding:10px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-bottom:4px solid #ffd54f;position:sticky;top:0;z-index:20}
+h1{margin:0;font-size:24px}
+h1 small{font-size:14px;background:#14543d;color:#fff;border-radius:20px;padding:3px 12px;margin-left:8px;vertical-align:middle}
 .tabs{display:flex;gap:10px}
-.tab{font-size:22px;font-weight:900;border:none;border-radius:16px;padding:14px 22px;cursor:pointer;background:#ffffff33;color:#fff;border:3px solid transparent}
-.tab.active{background:#ffd54f;color:#222;border-color:#fff;transform:scale(1.03)}
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#14543d;padding:12px 20px;font-size:18px}
-.toolbar label{background:#ffffff22;border-radius:12px;padding:8px 12px}
-.toolbar select,.toolbar input{font-size:20px;font-weight:700;border-radius:10px;border:none;padding:8px 10px}
-.btn{font-size:20px;font-weight:900;border:none;border-radius:14px;padding:14px 20px;cursor:pointer;background:#fff;color:#14543d}
+.tab{font-size:20px;font-weight:900;border:3px solid #cbd5e1;background:#f1f5f9;color:#334155;border-radius:16px;padding:12px 20px;cursor:pointer}
+.tab.active{background:#ffd54f;border-color:#222;color:#222}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#14543d;color:#fff;padding:10px 18px;font-size:18px}
+.toolbar select{font-size:19px;font-weight:800;border-radius:10px;border:none;padding:8px 10px}
+.btn{font-size:19px;font-weight:900;border:none;border-radius:12px;padding:12px 18px;cursor:pointer;background:#fff;color:#14543d}
 .btn:active{transform:scale(.96)}
-.btn.big{font-size:26px;padding:18px 26px}
-.btn.yellow{background:#ffd54f;color:#333}
-.btn.green{background:#2ecc71;color:#fff}
-.btn.red{background:#ff6b6b;color:#fff}
-.btn.blue{background:#4dabf7;color:#102a43}
-.btn.ghost{background:#ffffff22;color:#fff}
-main{display:grid;grid-template-columns:430px 1fr;gap:16px;padding:16px 20px 30px}
-@media(max-width:1100px){main{grid-template-columns:1fr}}
-.card{background:#fff;color:#222;border-radius:20px;padding:20px;box-shadow:0 6px 0 #00000033}
-.card h2{margin:0 0 10px;font-size:26px}
-.qnum{font-size:110px;font-weight:900;text-align:center;line-height:1;background:#f3f8f3;border:6px dashed #14543d;border-radius:20px;padding:10px;margin:10px 0}
-.qsub{font-size:24px;font-weight:700;text-align:center;background:#fff8dc;border-radius:12px;padding:10px}
-.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.row .btn{flex:1;min-height:64px}
-.splits{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-.pill{font-size:20px;font-weight:900;border:3px solid #14543d;background:#eaf7ee;border-radius:999px;padding:12px 16px;cursor:pointer}
-.pill.used{background:#14543d;color:#fff;text-decoration:line-through;opacity:.85}
-.hint{font-size:18px;background:#eef6ff;border-radius:12px;padding:10px 12px;margin-top:12px;line-height:1.6}
-.timerbox{display:flex;align-items:center;gap:10px;margin-top:12px;background:#222;color:#ffd54f;border-radius:14px;padding:10px 14px;font-size:28px;font-weight:900;justify-content:center}
-.timerbox button{font-size:20px;border-radius:10px;border:none;padding:10px 14px;font-weight:900;cursor:pointer}
-.gas{display:flex;gap:14px;justify-content:center;align-items:end;margin:12px 0}
-.ball{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:72px;font-weight:900;color:#fff;box-shadow:inset -10px -12px 0 #00000033}
-.ball.left{background:#ff6b6b}.ball.right{background:#4dabf7}
-.plus{font-size:60px;font-weight:900}
-#board{display:flex;gap:14px;align-items:stretch}
-.group{flex:1;background:#fff;color:#222;border-radius:20px;padding:12px;display:flex;flex-direction:column;min-width:0;border:5px solid transparent}
-.group.lead{border-color:#ffd54f}
-.gname{font-size:22px;font-weight:900;border:none;background:#f1f3f5;border-radius:10px;padding:10px;text-align:center;width:100%}
-.score{font-size:56px;font-weight:900;text-align:center;margin:6px 0}
-.track{flex:1;background:#e9f5ec;border-radius:14px;position:relative;overflow:hidden;display:flex;flex-direction:column-reverse;border:2px solid #14543d33;min-height:340px}
-.cell{flex:1;border-top:1px dashed #14543d44;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#5b7a68}
-.cell.fill{background:linear-gradient(#c8f0d0,#a4e6b2)}
-.runner{font-size:38px;position:absolute;left:50%;transform:translateX(-50%);transition:bottom .35s}
-.addbtn{font-size:32px;font-weight:900;border:none;border-radius:16px;padding:20px 0;margin-top:10px;cursor:pointer;background:var(--c,#2ecc71);color:#fff;min-height:84px;box-shadow:0 5px 0 #00000033}
-.addbtn:active{transform:scale(.97)}
-.minusbtn{margin-top:8px;background:#f1f3f5;border:none;border-radius:10px;padding:10px;font-size:18px;font-weight:700;cursor:pointer;color:#666}
-#winner{position:fixed;inset:0;background:#000000bb;display:none;align-items:center;justify-content:center;z-index:99;padding:20px}
+.btn.yellow{background:#ffd54f;color:#333}.btn.blue{background:#4dabf7;color:#fff}.btn.red{background:#ff6b6b;color:#fff}
+.wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 18px 10px;max-width:1400px;margin:0 auto}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+.arena{background:#fff;border-radius:22px;padding:16px;border:6px solid;position:relative;overflow:hidden;min-height:560px;display:flex;flex-direction:column}
+.arena.blue{border-color:#4dabf7}.arena.pink{border-color:#ff6b6b}
+.team{font-size:26px;font-weight:900;display:flex;align-items:center;justify-content:space-between}
+.score{font-size:52px;font-weight:900;background:#222;color:#ffd54f;border-radius:16px;padding:0 22px}
+.qrow{display:flex;gap:12px;align-items:stretch;margin-top:12px}
+.qcard{flex:1;background:#f1f5f9;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:900;padding:18px;min-height:120px;text-align:center;line-height:1.2}
+.qcard small{display:block;font-size:20px;color:#64748b;font-weight:700}
+.timer{width:96px;min-width:96px;background:#eef2ff;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900}
+.timer svg{width:64px;height:64px;transform:rotate(-90deg)}
+.timer b{font-size:22px}
+.drop{margin-top:14px;border:5px dashed #94a3b8;border-radius:18px;min-height:130px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#94a3b8;background:#f8fafc;transition:.2s}
+.drop.over{border-color:#22c55e;background:#ecfdf5;color:#16a34a;transform:scale(1.02)}
+.drop.right{border-style:solid;border-color:#22c55e;background:#dcfce7;color:#15803d}
+.drop.wrong{animation:shake .4s;border-color:#ef4444;color:#ef4444}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}50%{transform:translateX(10px)}75%{transform:translateX(-6px)}}
+.answers{display:flex;gap:12px;justify-content:space-around;margin-top:auto;padding-top:16px}
+.ball{width:104px;height:104px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:900;color:#fff;cursor:grab;touch-action:none;box-shadow:0 6px 0 #00000033,inset -8px -10px 0 #00000033;position:relative;z-index:5}
+.ball.sel{outline:6px solid #222;transform:scale(1.08)}
+.ball.drag{position:fixed;z-index:99;pointer-events:none;transform:scale(1.15);cursor:grabbing;margin:0}
+.bar{height:14px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#4dabf7);width:0%}
+.foot{max-width:1400px;margin:0 auto;padding:0 18px 30px;color:#475569;font-size:17px;line-height:1.7}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60}
+#winner{position:fixed;inset:0;background:#000000aa;display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
 #winner.show{display:flex}
-.pop{background:#fff;color:#222;border-radius:24px;padding:40px 60px;text-align:center;border:8px solid #ffd54f}
-.pop h2{font-size:64px;margin:0}
-.pop p{font-size:28px}
-footer{padding:0 20px 30px;color:#cfe8d8;font-size:16px}
-kbd{background:#fff;color:#333;border-radius:6px;padding:2px 8px}
+.pop{background:#fff;border-radius:24px;padding:36px 56px;text-align:center;border:8px solid #ffd54f}
+.pop h2{font-size:60px;margin:0}
+.pop p{font-size:24px}
+.float{font-size:60px;font-weight:900;position:absolute;pointer-events:none;animation:up 1s forwards;z-index:70}
+@keyframes up{to{transform:translateY(-90px);opacity:0}}
 </style>
 </head>
 <body>
 <header>
-<div><h1>🚂 10以內的分與合 <small>分組競賽互動白板</small></h1></div>
+<div><h1>🚂 分與合動態競賽 <small>像影片一樣・拖答案球上去</small></h1></div>
 <div class="tabs">
-<button class="tab active" id="tabFen" onclick="switchGame('fen')">① 分：小火車出山洞</button>
-<button class="tab" id="tabHe" onclick="switchGame('he')">② 合：氣球合合樂</button>
+<button class="tab" id="tFen" onclick="setMode('fen')">① 10以內的分</button>
+<button class="tab active" id="tHe" onclick="setMode('he')">② 10以內的合</button>
 </div>
 </header>
 <div class="toolbar">
-<label>組數 <select id="groupCount" onchange="buildGroups()"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
-<label>終點 <select id="goal" onchange="buildGroups()"><option>6</option><option>8</option><option selected>10</option><option>12</option></select> 格</label>
-<button class="btn yellow" onclick="resetScores()">↺ 分數歸零</button>
-<button class="btn ghost" onclick="toggleFS()">⛶ 全螢幕投影</button>
-<span>⏱ <kbd>空白鍵</kbd> 開始/暫停計時</span>
+<span>🏁 先到 <select id="goal" onchange="resetAll()"><option>5</option><option selected>10</option><option>15</option></select> 分獲勝</span>
+<button class="btn yellow" onclick="nextRound()">🎲 兩邊換題</button>
+<button class="btn" onclick="resetAll()">↺ 比分歸零</button>
+<button class="btn blue" onclick="toggleFS()">⛶ 全螢幕投影</button>
+<button class="btn red" id="sndBtn" onclick="toggleSnd()">🔊 音效開</button>
 </div>
 
-<main>
-<!-- 左：題目區 -->
-<div>
-<div class="card" id="panelFen">
-<h2>① 10以內的分｜小火車出山洞</h2>
-<div class="row">
-<button class="btn blue big" onclick="newFen()">🎲 抽數字卡</button>
-<button class="btn green big" id="fenNumBtn" onclick="newFen()">9</button>
-</div>
-<div class="qnum" id="fenBig">9</div>
-<div class="qsub" id="fenCount">共 8 種分法｜已找到 0 種</div>
-<div class="splits" id="fenSplits"></div>
-<div class="hint">玩法：老師抽卡如 <b>9</b>，各組輪流說一種「<b>9可以分成1和8</b>」。說過的點一下變綠，答對的組按右邊 <b>+1分</b> 前進。不分出0。</div>
-<div class="timerbox"><span id="t1">⏱ 30</span><button onclick="startTimer()">▶</button><button onclick="pauseTimer()">⏸</button><button onclick="resetTimer()">↺</button></div>
+<div class="wrap">
+<section class="arena blue" id="a0">
+<div class="team"><span>🔵 藍隊 <span style="font-size:16px;color:#64748b">左邊同學上台</span></span><span class="score" id="s0">0</span></div>
+<div class="qrow"><div class="qcard" id="q0">5 + 1 = ?</div>
+<div class="timer"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#e2e8f0" stroke-width="9"/><circle id="c0" cx="32" cy="32" r="26" fill="none" stroke="#22c55e" stroke-width="9" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="0"/></svg><b id="t0">20</b></div></div>
+<div class="drop" id="d0">把答案拖到這裡 👆</div>
+<div class="bar"><i id="b0"></i></div>
+<div class="answers" id="ans0"></div>
+</section>
+
+<section class="arena pink" id="a1">
+<div class="team"><span>🔴 紅隊 <span style="font-size:16px;color:#64748b">右邊同學上台</span></span><span class="score" id="s1">0</span></div>
+<div class="qrow"><div class="qcard" id="q1">1 + 5 = ?</div>
+<div class="timer"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#e2e8f0" stroke-width="9"/><circle id="c1" cx="32" cy="32" r="26" fill="none" stroke="#ff6b6b" stroke-width="9" stroke-linecap="round" stroke-dasharray="163" stroke-dashoffset="0"/></svg><b id="t1">20</b></div></div>
+<div class="drop" id="d1">把答案拖到這裡 👆</div>
+<div class="bar"><i id="b1"></i></div>
+<div class="answers" id="ans1"></div>
+</section>
 </div>
 
-<div class="card" id="panelHe" style="display:none">
-<h2>② 10以內的合｜氣球合合樂</h2>
-<div class="row">
-<button class="btn blue big" onclick="newHe()">🎲 出氣球題</button>
-<button class="btn yellow big" onclick="newHe(true)">🎯 合10挑戰</button>
-<button class="btn green big" onclick="revealHe()">👁 公佈答案</button>
-</div>
-<div class="gas">
-<div class="ball left" id="heA">4</div><div class="plus">＋</div>
-<div class="ball right" id="heB">3</div><div class="plus">＝</div>
-<div class="ball" id="heAns" style="background:#ffd54f;color:#333">？</div>
-</div>
-<div class="qsub" id="heSentence">4個和3個合起來是幾個？</div>
-<div class="hint">玩法A <b>看合</b>：秀出兩手氣球，各組小白板寫合起來是幾，同時亮板，全對得分。<br>玩法B <b>湊10</b>：按「合10挑戰」，如秀出 <b>3</b>，搶答「還要7」。先搶到且說對，前進2格。</div>
-<div class="timerbox"><span id="t2">⏱ 15</span><button onclick="startTimer2()">▶</button><button onclick="pauseTimer2()">⏸</button><button onclick="resetTimer2()">↺</button></div>
-</div>
-</div>
-
-<!-- 右：競賽跑道 -->
-<div class="card">
-<h2>🏁 分組競賽台｜答對按 +1，前進一格 <span style="font-size:16px;color:#666">（組名可直接改）</span></h2>
-<div id="board"></div>
-<div class="row">
-<button class="btn red" onclick="resetScores()">分數歸零</button>
-<button class="btn ghost" style="color:#333;background:#eee" onclick="allPlus()">全部+1慰勞分</button>
-</div>
-</div>
-</main>
-
-<div id="winner" onclick="this.classList.remove('show')"><div class="pop"><h2 id="winText">🏆 第一組獲勝！</h2><p>點一下畫面繼續上課</p></div></div>
-<footer>操作：左邊出題 → 學生回答 → 右邊按該組+1。觸控白板手指點即可。建議音量開啟，到終點會放煙火字。</footer>
+<div class="foot">玩法跟圖片影片一樣：兩組各派1人上台，同時做題，把下面4顆答案球<b>用手指拖到上面空格</b>（點一下再點空格也可以）。答對撒花+1分，答錯會震動退回。老師用 <b>①分 / ②合</b> 切換單元：分＝<b>9可以分成2和？</b>，合＝<b>5＋1＝？</b>，都是10以內、呼應教師手冊ch03。</div>
+<canvas id="fx"></canvas>
+<div id="winner" onclick="this.classList.remove('show')"><div class="pop"><h2 id="winT">🏆 藍隊獲勝！</h2><p>點一下畫面繼續・按↺重新開始</p></div></div>
 
 <script>
-let game='fen', scores=[], goal=10;
-let colors=['#2ecc71','#4dabf7','#ff6b6b','#ffa94d','#9775fa','#20c997'];
-let icons=['🚂','🚗','🚀','⛵','🎈','🐢'];
-let names=['第一組','第二組','第三組','第四組','第五組','第六組'];
+let mode='he', scores=[0,0], goal=10, qs=[null,null], lock=[false,false], snd=true;
+let times=[20,20], timers=[];
+const COLORS=['#4dabf7','#ffa94d','#9775fa','#20c997'];
+const $=id=>document.getElementById(id);
+function toggleFS(){!document.fullscreenElement?document.documentElement.requestFullscreen():document.exitFullscreen();}
+function toggleSnd(){snd=!snd;$('sndBtn').textContent=snd?'🔊 音效開':'🔇 音效關';}
+function setMode(m){mode=m;$('tFen').classList.toggle('active',m==='fen');$('tHe').classList.toggle('active',m==='he');nextRound();}
+function rnd(n){return Math.floor(Math.random()*n);}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function switchGame(g){
- game=g;
- document.getElementById('tabFen').classList.toggle('active',g==='fen');
- document.getElementById('tabHe').classList.toggle('active',g==='he');
- document.getElementById('panelFen').style.display=g==='fen'?'block':'none';
- document.getElementById('panelHe').style.display=g==='he'?'block':'none';
-}
-function toggleFS(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
-
-function buildGroups(){
- let n=+document.getElementById('groupCount').value;
- goal=+document.getElementById('goal').value;
- scores=Array(n).fill(0);
- let board=document.getElementById('board'); board.innerHTML='';
- for(let i=0;i<n;i++){
-  let d=document.createElement('div'); d.className='group'; d.id='g'+i;
-  d.innerHTML=`<input class="gname" value="${names[i]}">
-  <div class="score" id="s${i}">0</div>
-  <div class="track" id="tr${i}"></div>
-  <button class="addbtn" style="--c:${colors[i]}" onclick="plus(${i},1)">+1 分</button>
-  <button class="addbtn" style="--c:${colors[i]};filter:grayscale(.3);font-size:20px;min-height:54px;opacity:.85" onclick="plus(${i},2)">+2 分（合10挑戰用）</button>
-  <button class="minusbtn" onclick="plus(${i},-1)">－1（按錯更正）</button>`;
-  board.appendChild(d);
-  drawTrack(i);
+function genQ(){
+ if(mode==='he'){
+  let a=1+rnd(8), b=1+rnd(10-a); if(a+b>10){a=5;b=1;}
+  let ans=a+b, opts=new Set([ans]);
+  while(opts.size<4){let d=ans+rnd(5)-2; if(d>=0&&d<=10) opts.add(d);}
+  return {html:`${a} ＋ ${b} ＝ <span style="color:#e11d48">？</span><small>${a}個和${b}個合起來是幾個？</small>`,ans,opts:shuffle([...opts])};
+ }else{
+  let N=5+rnd(6), x=1+rnd(N-1), ans=N-x, opts=new Set([ans]);
+  while(opts.size<4){let d=ans+rnd(5)-2; if(d>=1&&d<N) opts.add(d);}
+  return {html:`${N} 可以分成 ${x} 和 <span style="color:#1d4ed8">？</span><small>${N}個分一邊${x}個，另一邊幾個？</small>`,ans,opts:shuffle([...opts])};
  }
 }
-function drawTrack(i){
- let tr=document.getElementById('tr'+i); tr.innerHTML='';
- for(let g=goal;g>=1;g--){
-  let c=document.createElement('div'); c.className='cell'+(g<=scores[i]?' fill':''); c.textContent=g;
-  tr.appendChild(c);
- }
- let r=document.createElement('div'); r.className='runner'; r.textContent=icons[i];
- r.style.bottom=(scores[i]>=goal?`calc(100% - 46px)`:`calc(${(scores[i]/goal*100)}% + 2px)`);
- tr.appendChild(r);
- document.getElementById('s'+i).textContent=scores[i];
- let max=Math.max(...scores);
- document.querySelectorAll('.group').forEach((el,k)=>el.classList.toggle('lead',scores[k]===max&&scores[k]>0));
-}
-function plus(i,d){
- scores[i]=Math.max(0,scores[i]+d); drawTrack(i);
- beep(d>0?660:220);
- if(scores[i]>=goal){
-  let nm=document.querySelector('#g'+i+' .gname').value;
-  document.getElementById('winText').textContent=`🏆 ${nm} 獲勝！`;
-  document.getElementById('winner').classList.add('show');
- }
-}
-function resetScores(){ scores=scores.map(()=>0); scores.forEach((_,i)=>drawTrack(i)); document.getElementById('winner').classList.remove('show'); }
-function allPlus(){ scores=scores.map(s=>s+1); scores.forEach((_,i)=>drawTrack(i)); }
 
-// ---- 遊戲1 分 ----
-let fenN=9;
-function newFen(){
- let pool=[6,7,8,9,10];
- fenN=pool[Math.floor(Math.random()*pool.length)];
- document.getElementById('fenNumBtn').textContent=fenN;
- document.getElementById('fenBig').textContent=fenN+' 🚂';
- renderFen();
+function newQ(t){
+ qs[t]=genQ(); lock[t]=false; times[t]=20;
+ $('q'+t).innerHTML=qs[t].html;
+ let d=$('d'+t); d.className='drop'; d.textContent='把答案拖到這裡 👆';
+ let box=$('ans'+t); box.innerHTML='';
+ qs[t].opts.forEach((v,i)=>{
+  let b=document.createElement('div'); b.className='ball'; b.textContent=v; b.dataset.v=v; b.dataset.t=t;
+  b.style.background=COLORS[(i+t)%4];
+  box.appendChild(b); attachDrag(b);
+ });
 }
-function renderFen(){
- let box=document.getElementById('fenSplits'); box.innerHTML='';
- for(let i=1;i<fenN;i++){
-  let b=document.createElement('button'); b.className='pill';
-  b.textContent=`${fenN}分成${i}和${fenN-i}`;
-  b.onclick=()=>{b.classList.toggle('used');updateFenCount();beep(520);};
-  box.appendChild(b);
+function nextRound(){newQ(0);newQ(1);}
+function resetAll(){goal=+$('goal').value;scores=[0,0];$('s0').textContent=0;$('s1').textContent=0;$('b0').style.width='0%';$('b1').style.width='0%';$('winner').classList.remove('show');nextRound();}
+
+// ---- 拖曳（滑鼠＋觸控白板） ----
+let dragEl=null,sx=0,sy=0,moved=false;
+function attachDrag(b){
+ b.addEventListener('pointerdown',e=>{
+  if(lock[b.dataset.t])return;
+  dragEl=b;moved=false;sx=e.clientX;sy=e.clientY;
+  b.setPointerCapture(e.pointerId);
+ });
+ b.addEventListener('pointermove',e=>{
+  if(!dragEl||dragEl!==b)return;
+  if(Math.hypot(e.clientX-sx,e.clientY-sy)>10){moved=true;b.classList.add('drag');
+   b.style.left=(e.clientX-52)+'px';b.style.top=(e.clientY-52)+'px';}
+  let t=+b.dataset.t, r=$('d'+t).getBoundingClientRect();
+  $('d'+t).classList.toggle('over',e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom);
+ });
+ b.addEventListener('pointerup',e=>{
+  if(!dragEl||dragEl!==b)return;
+  let t=+b.dataset.t;
+  $('d'+t).classList.remove('over');
+  if(moved){
+   let r=$('d'+t).getBoundingClientRect();
+   b.classList.remove('drag');b.style.left='';b.style.top='';
+   if(e.clientX>r.left&&e.clientX<r.right&&e.clientY>r.top&&e.clientY<r.bottom) answer(t,+b.dataset.v);
+  }else{
+   document.querySelectorAll('.ball').forEach(x=>x.classList.remove('sel'));
+   b.classList.add('sel');
+   ding(500);
+  }
+  dragEl=null;
+ });
+}
+document.querySelectorAll('.drop').forEach(d=>{
+ d.addEventListener('click',()=>{
+  let t=+d.id.slice(1);
+  let sel=document.querySelector(`.ball.sel[data-t="${t}"]`);
+  if(sel) answer(t,+sel.dataset.v);
+ });
+});
+
+function answer(t,v){
+ if(lock[t])return;
+ let d=$('d'+t);
+ if(v===qs[t].ans){
+  lock[t]=true; d.classList.add('right'); d.textContent='⭕ '+v+' 答對了！';
+  scores[t]++; $('s'+t).textContent=scores[t];
+  $('b'+t).style.width=Math.min(100,scores[t]/goal*100)+'%';
+  fanfare(); burst(d); floatText(d,'+1');
+  document.querySelectorAll(`.ball[data-t="${t}"]`).forEach(x=>{if(+x.dataset.v!==v){x.style.opacity=.35;}});
+  if(scores[t]>=goal){
+   $('winT').textContent=(t===0?'🏆 藍隊獲勝！':'🏆 紅隊獲勝！');
+   setTimeout(()=>$('winner').classList.add('show'),700);
+   winSound();
+  }else setTimeout(()=>newQ(t),1100);
+ }else{
+  d.classList.add('wrong'); d.textContent='❌ 再想想！';
+  buzz();
+  setTimeout(()=>{if(!lock[t]){d.classList.remove('wrong');d.textContent='把答案拖到這裡 👆';}},600);
  }
- updateFenCount();
-}
-function updateFenCount(){
- let u=document.querySelectorAll('#fenSplits .pill.used').length;
- document.getElementById('fenCount').textContent=`共 ${fenN-1} 種分法｜已找到 ${u} 種`;
 }
 
-// ---- 遊戲2 合 ----
-let ha=4,hb=3,heMode='sum';
-function newHe(onlyTen=false){
- if(onlyTen){ heMode='ten'; ha=1+Math.floor(Math.random()*9); hb=10-ha;
-  document.getElementById('heA').textContent=ha;
-  document.getElementById('heB').textContent='？';
-  document.getElementById('heAns').textContent='10';
-  document.getElementById('heSentence').textContent=`已經有 ${ha} 個，還要幾個才合起來是10個？`;
- }else{ heMode='sum';
-  ha=1+Math.floor(Math.random()*8);
-  hb=1+Math.floor(Math.random()*(10-ha));
-  document.getElementById('heA').textContent=ha;
-  document.getElementById('heB').textContent=hb;
-  document.getElementById('heAns').textContent='？';
-  document.getElementById('heSentence').textContent=`${ha}個和${hb}個合起來是幾個？`;
+// ---- 計時圈 ----
+setInterval(()=>{
+ for(let t=0;t<2;t++){
+  if(lock[t])continue;
+  times[t]-=0.2;
+  if(times[t]<=0){times[t]=20;newQ(t);continue;}
+  $('t'+t).textContent=Math.ceil(times[t]);
+  $('c'+t).style.strokeDashoffset=163*(1-times[t]/20);
+  $('c'+t).setAttribute('stroke',times[t]<6?'#ef4444':(t===0?'#22c55e':'#ff6b6b'));
  }
-}
-function revealHe(){
- if(heMode==='ten'){ document.getElementById('heB').textContent=hb; document.getElementById('heSentence').textContent=`${ha}和${hb}合起來是10！`; }
- else{ document.getElementById('heAns').textContent=ha+hb; document.getElementById('heSentence').textContent=`${ha}個和${hb}個合起來是${ha+hb}個！`; }
- beep(760);
-}
+},200);
 
-// ---- 計時器 ----
-let timer=null;
-let two=null;
-let c1=30,c2=15;
-function startTimer(){ pauseTimer(); timer=setInterval(()=>{c1--;if(c1<0){c1=0;pauseTimer();beep(880);}document.getElementById('t1').textContent='⏱ '+c1;},1000);}
-function pauseTimer(){clearInterval(timer);}
-function resetTimer(){pauseTimer();c1=30;document.getElementById('t1').textContent='⏱ 30';}
-function startTimer2(){clearInterval(two);two=setInterval(()=>{c2--;if(c2<0){c2=0;clearInterval(two);beep(880);}document.getElementById('t2').textContent='⏱ '+c2;},1000);}
-function pauseTimer2(){clearInterval(two);}
-function resetTimer2(){clearInterval(two);c2=15;document.getElementById('t2').textContent='⏱ 15';}
-document.addEventListener('keydown',e=>{ if(e.code==='Space'){e.preventDefault(); if(game==='fen'){timer?pauseTimer()+ (timer=null):startTimer();} else {two?pauseTimer2()+(two=null):startTimer2();}}});
+// ---- 音效 ----
 let AC=null;
-function beep(f){ try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();let o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);g.gain.value=.12;o.start();o.stop(AC.currentTime+.18);}catch(e){} }
+function tone(f,ms=0.15,dl=0){if(!snd)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();let o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;o.connect(g);g.connect(AC.destination);let s=AC.currentTime+dl;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.25,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+ms);o.start(s);o.stop(s+ms+.05);}catch(e){}}
+function ding(f){tone(f||600);} function buzz(){tone(160,.3);} function fanfare(){tone(523,.15);tone(659,.15,.12);tone(784,.25,.24);} function winSound(){[523,659,784,1047].forEach((f,i)=>tone(f,.25,i*.15));}
 
-buildGroups(); renderFen(); newHe();
+// ---- 撒花 ----
+const cv=$('fx'),ctx=cv.getContext('2d');let P=[];
+function sizeCv(){cv.width=innerWidth;cv.height=innerHeight;}addEventListener('resize',sizeCv);sizeCv();
+function burst(el){let r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;for(let i=0;i<90;i++)P.push({x,y,vx:(Math.random()-.5)*11,vy:Math.random()*-9-2,g:.35,s:4+Math.random()*6,c:`hsl(${rnd(360)},90%,60%)`,l:60+rnd(40)});}
+function floatText(el,t){let r=el.getBoundingClientRect(),s=document.createElement('div');s.className='float';s.textContent=t;s.style.left=(r.left+20)+'px';s.style.top=(r.top-10)+'px';s.style.color='#16a34a';document.body.appendChild(s);setTimeout(()=>s.remove(),1000);}
+(function loop(){ctx.clearRect(0,0,cv.width,cv.height);P=P.filter(p=>p.l>0);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l--;ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,p.s,p.s);});requestAnimationFrame(loop);})();
+
+nextRound();
 </script>
 </body>
 </html>
